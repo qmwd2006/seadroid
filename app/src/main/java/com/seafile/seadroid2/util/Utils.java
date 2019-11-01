@@ -865,9 +865,13 @@ public class Utils {
             decorView.setSystemUiVisibility(uiOptions);
         }
     }
-    public static void openSync(Context context) {
-        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"Start the upload service");
 
+    public static int getThumbnailWidth() {
+        return (int) SeadroidApplication.getAppContext().getResources().getDimension(R.dimen.gallery_icon_show);
+    }
+
+    public static void openSync(Context context) {
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(), "Start the upload service");
         Intent mediaObserver = new Intent(context, MediaObserverService.class);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             context.startService(mediaObserver);
@@ -885,5 +889,4 @@ public class Utils {
             mJobScheduler.schedule(builder.build());
         }
     }
-
 }
