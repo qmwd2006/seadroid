@@ -1,6 +1,9 @@
 package com.seafile.seadroid2.util;
 
 import android.app.Activity;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +33,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.seafile.seadroid2.R;
 import com.seafile.seadroid2.SeadroidApplication;
+import com.seafile.seadroid2.cameraupload.MediaObserverService;
+import com.seafile.seadroid2.cameraupload.MediaSchedulerService;
 import com.seafile.seadroid2.data.SeafRepo;
 import com.seafile.seadroid2.fileschooser.SelectableFile;
 
@@ -83,6 +88,7 @@ public class Utils {
     private static final String DEBUG_TAG = "Utils";
     private static final String HIDDEN_PREFIX = ".";
     private static HashMap<String, Integer> suffixIconMap = null;
+    private static final int JOB_ID = 1;
 
     private Utils() {}
 
@@ -859,6 +865,25 @@ public class Utils {
             decorView.setSystemUiVisibility(uiOptions);
         }
     }
+    public static void openSync(Context context) {
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"Start the upload service");
 
+        Intent mediaObserver = new Intent(context, MediaObserverService.class);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            context.startService(mediaObserver);
+
+        } else {
+            JobScheduler mJobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, new ComponentName(context.getPackageName(),
+                    MediaSchedulerService.class.getName()));
+            builder.setMinimumLatency(1 * 60 * 1000);// Set to execute after at least 15 minutes delay
+            builder.setOverrideDeadline(2 * 60 * 1000);// The setting is delayed by 20 minutes,
+            builder.setRequiresDeviceIdle(true);
+            builder.setRequiresCharging(true);
+            builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED);
+            builder.setPersisted(true);
+            mJobScheduler.schedule(builder.build());
+        }
+    }
 
 }

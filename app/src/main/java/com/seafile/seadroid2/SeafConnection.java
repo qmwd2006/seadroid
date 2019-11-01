@@ -1507,13 +1507,15 @@ public class SeafConnection {
 
             if (req.message() == null) {
                 throw SeafException.networkException;
-            } else if (req.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            } else if (req.code() == HttpURLConnection.HTTP_UNAUTHORIZED ) {
                 String wiped = req.header("X-Seafile-Wiped");
                 if (wiped != null) {
                     throw SeafException.remoteWipedException;
                 } else {
                     throw new SeafException(req.code(), req.message());
                 }
+            } else if (req.code() == 443) {
+
             } else {
                 throw new SeafException(req.code(), req.message());
             }

@@ -3,7 +3,9 @@ package com.seafile.seadroid2.transfer;
 import android.util.Log;
 
 import com.google.common.collect.Lists;
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.util.ConcurrentAsyncTask;
+import com.seafile.seadroid2.util.SystemSwitchUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -92,6 +94,8 @@ public abstract class TransferManager {
             transferringList.add(task);
 
             ConcurrentAsyncTask.execute(task);
+            SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"start upload。。。。");
+
         }
     }
 
@@ -106,17 +110,18 @@ public abstract class TransferManager {
     }
 
     protected synchronized void remove(int taskID) {
-
         TransferTask toCancel = getTask(taskID);
         if (toCancel == null)
             return;
 
         if (!waitingList.isEmpty()) {
             waitingList.remove(toCancel);
+            SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"waitingList.remove(toCancel);");
         }
 
         if (!transferringList.isEmpty()) {
             transferringList.remove(toCancel);
+            SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"transferringList.remove(toCancel)");
         }
     }
 

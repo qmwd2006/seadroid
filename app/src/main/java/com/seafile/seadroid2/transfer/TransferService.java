@@ -5,9 +5,12 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.notification.DownloadNotificationProvider;
 import com.seafile.seadroid2.notification.UploadNotificationProvider;
+import com.seafile.seadroid2.util.SystemSwitchUtils;
 
 import java.util.List;
 
@@ -128,6 +131,7 @@ public class TransferService extends Service {
      */
     public int addUploadTask(Account account, String repoID, String repoName, String dir,
             String filePath, boolean isUpdate, boolean isCopyToLocal) {
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"addUploadTask");
         return addTaskToUploadQue(account, repoID, repoName, dir, filePath, isUpdate, isCopyToLocal);
     }
 

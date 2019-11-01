@@ -2,10 +2,12 @@ package com.seafile.seadroid2.transfer;
 
 import android.util.Log;
 
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.data.DataManager;
 import com.seafile.seadroid2.data.ProgressMonitor;
+import com.seafile.seadroid2.util.SystemSwitchUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -107,9 +109,11 @@ public class UploadTask extends TransferTask {
         state = err == null ? TaskState.FINISHED : TaskState.FAILED;
         if (uploadStateListener != null) {
             if (err == null) {
+                SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"successfully upload。。。。");
                 uploadStateListener.onFileUploaded(taskID);
             }
             else {
+                SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"fail to upload。。。。");
                 uploadStateListener.onFileUploadFailed(taskID);
             }
         }

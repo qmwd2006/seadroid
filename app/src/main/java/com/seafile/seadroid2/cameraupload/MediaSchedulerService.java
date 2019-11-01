@@ -6,8 +6,11 @@ import android.app.job.JobService;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.SettingsManager;
+import com.seafile.seadroid2.util.SystemSwitchUtils;
 
 /**
  * This service monitors the media provider content provider for new images/videos.
@@ -20,6 +23,7 @@ public class MediaSchedulerService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
+        Log.i("INFO", "onStartJobp");
         mSettingsManager = SettingsManager.instance();
         mSettingsManager.registerSharedPreferencesListener(settingsListener);
         mCameraManager = new CameraUploadManager(getApplicationContext());
@@ -27,13 +31,16 @@ public class MediaSchedulerService extends JobService {
             mCameraManager.performFullSync();
         }
         jobFinished(jobParameters, true);
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"onStartJob");
         return true;
     }
 
     @Override
     public boolean onStopJob(JobParameters jobParameters) {
+        Log.i("INFO", "onStopJob");
         if (mSettingsManager != null) {
             mSettingsManager.unregisterSharedPreferencesListener(settingsListener);
+            SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"onStopJob");
         }
         return false;
     }

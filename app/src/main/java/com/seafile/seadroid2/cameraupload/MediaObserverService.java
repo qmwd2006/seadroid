@@ -7,8 +7,11 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.IBinder;
 import android.provider.MediaStore;
+import android.util.Log;
 
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.SettingsManager;
+import com.seafile.seadroid2.util.SystemSwitchUtils;
 
 /**
  * This service monitors the media provider content provider for new images/videos.
@@ -34,7 +37,7 @@ public class MediaObserverService extends Service {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
+            Log.i("INFO", "onReceive=====------");
             boolean doFullResync = false;
 
             // here we have to catch *all* the cases that might make a full resync to the repository
@@ -59,9 +62,10 @@ public class MediaObserverService extends Service {
                     doFullResync = true;
                     break;
             }
-
+            Log.i("INFO", "onReceive====1111=");
             if (cameraManager.isCameraUploadEnabled() && doFullResync) {
                 // Log.i(DEBUG_TAG, "Doing a full resync of all media content.");
+                Log.i("INFO", "onReceive====performFullSync=");
                 cameraManager.performFullSync();
             }
         }
@@ -133,6 +137,7 @@ public class MediaObserverService extends Service {
             if (cameraManager.isCameraUploadEnabled()) {
                 // Log.d(DEBUG_TAG, "Noticed a change in the media provider, scheduling sync.");
                 cameraManager.performSync();
+                SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"cameraManager.performSync()");
             }
         }
     }

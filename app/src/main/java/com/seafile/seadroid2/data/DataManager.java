@@ -13,6 +13,7 @@ import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.account.Account;
 import com.seafile.seadroid2.account.AccountInfo;
 import com.seafile.seadroid2.crypto.Crypto;
+import com.seafile.seadroid2.util.SystemSwitchUtils;
 import com.seafile.seadroid2.util.Utils;
 
 import org.apache.commons.io.FileUtils;
@@ -77,7 +78,7 @@ public class DataManager {
      * @throws IOException if the file could not be created.
      */
     public static File createTempFile() throws IOException {
-        return File.createTempFile("file-", ".tmp", storageManager.getTempDir());
+        return File.createTempFile("file-", ".ttmp", storageManager.getTempDir());
     }
 
     /**
@@ -716,6 +717,7 @@ public class DataManager {
             }
         }
         // Update file cache entry
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"addCachedFile");
         addCachedFile(repoName, repoID, path, newFileID, fileInRepo);
     }
 

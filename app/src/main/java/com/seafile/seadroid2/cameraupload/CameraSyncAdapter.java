@@ -20,6 +20,7 @@ import android.util.Log;
 
 import com.google.common.base.Joiner;
 import com.seafile.seadroid2.R;
+import com.seafile.seadroid2.SeadroidApplication;
 import com.seafile.seadroid2.SeafException;
 import com.seafile.seadroid2.SettingsManager;
 import com.seafile.seadroid2.account.Account;
@@ -34,6 +35,7 @@ import com.seafile.seadroid2.transfer.UploadTaskInfo;
 import com.seafile.seadroid2.ui.CustomNotificationBuilder;
 import com.seafile.seadroid2.ui.activity.AccountsActivity;
 import com.seafile.seadroid2.ui.activity.SettingsActivity;
+import com.seafile.seadroid2.util.SystemSwitchUtils;
 import com.seafile.seadroid2.util.Utils;
 
 import java.io.File;
@@ -121,6 +123,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
         if (txService != null)
             return;
 
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"startTransferService");
         Intent bIntent = new Intent(getContext(), TransferService.class);
         getContext().bindService(bIntent, mConnection, Context.BIND_AUTO_CREATE);
     }
@@ -166,7 +169,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
      */
     private void createDirectories(DataManager dataManager) throws SeafException {
         List<GalleryBucketUtils.Bucket> buckets = GalleryBucketUtils.getMediaBuckets(getContext());
-
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"start createDirectories");
         // create base directory
         forceCreateDirectory(dataManager, "/", BASE_DIR);
 
@@ -225,7 +228,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
         synchronized (this) {
             cancelled = false;
         }
-
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"start onPerformSync");
         /*Log.i(DEBUG_TAG, "Syncing images and video to " + account);
 
         Log.d(DEBUG_TAG, "Selected buckets for camera upload: "+settingsMgr.getCameraUploadBucketList());
@@ -286,7 +289,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
                  */
                 Log.e(DEBUG_TAG, "Sync aborted because the target repository does not exist");
                 syncResult.databaseError = true;
-
+                SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"start validateRepository");
                 showNotificationRepoError();
                 return;
             }
@@ -301,10 +304,12 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
                 // Log.d(DEBUG_TAG, "waiting for transfer service");
                 Thread.sleep(100);
                 timeout -= 100;
+                SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"start timeout");
             }
 
             if (txService == null) {
                 Log.e(DEBUG_TAG, "TransferService did not come up in time, aborting sync");
+                SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"start syncResult");
                 syncResult.delayUntil = 60;
                 return;
             }
@@ -323,6 +328,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
             // Log.d(DEBUG_TAG, "syncResult: " + syncResult);
 
         } catch (SeafException e) {
+            SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"in SeafException");
             switch (e.getCode()) {
                 /*
                  * here we have basically two scenarios
@@ -345,10 +351,11 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         } catch (Exception e) {
             Log.e(DEBUG_TAG, "sync aborted because an unknown error", e);
+            SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"in Exception");
             syncResult.stats.numParseExceptions++;
         } finally {
             if (txService != null) {
-
+                SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"in finally");
                 // Log.d(DEBUG_TAG, "Cancelling remaining pending tasks (if any)");
                 txService.cancelUploadTasksByIds(tasksInProgress);
 
@@ -362,7 +369,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
     private void uploadImages(SyncResult syncResult, DataManager dataManager) throws SeafException, InterruptedException {
 
         // Log.d(DEBUG_TAG, "Starting to upload images...");
-
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"in uploadImages");
         if (isCancelled())
             return;
 
@@ -491,7 +498,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
      * @throws SeafException
      */
     private void iterateCursor(SyncResult syncResult, DataManager dataManager, Cursor cursor) throws SeafException, InterruptedException {
-
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"start iterateCursor");
         tasksInProgress.clear();
 
         // upload them one by one
@@ -526,7 +533,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
                 // Log.d(DEBUG_TAG, "Skipping media " + file + " because we have uploaded it in the past.");
                 continue;
             }
-
+            SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"Initialize upload info");
             uploadFile(dataManager, file, bucketName);
         }
 
@@ -536,6 +543,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private void waitForUploads() throws InterruptedException {
         // Log.d(DEBUG_TAG, "wait for transfer service to finish our tasks");
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"waitForUploads");
         WAITLOOP: while (!isCancelled()) {
             Thread.sleep(100); // wait
 
@@ -583,12 +591,13 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
     private void uploadFile(DataManager dataManager, File file, String bucketName) throws SeafException {
 
         String serverPath = Utils.pathJoin(BASE_DIR, bucketName);
-
         List<SeafDirent> list = dataManager.getCachedDirents(targetRepoId, serverPath);
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),list.size()+"=====serverPath==="+serverPath);
         if (list == null) {
             Log.e(DEBUG_TAG, "Seadroid dirent cache is empty in uploadFile. Should not happen, aborting.");
             // the dirents were supposed to be refreshed in createDirectories()
             // something changed, abort.
+            SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"list == null");
             throw SeafException.unknownException;
         }
 
@@ -602,6 +611,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
         String prefix = filename.substring(0, filename.lastIndexOf("."));
         String suffix = filename.substring(filename.lastIndexOf("."));
         Pattern pattern = Pattern.compile(Pattern.quote(prefix) + "( \\(\\d+\\))?" + Pattern.quote(suffix));
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"filename=="+filename +"prefix=="+prefix+"suffix=="+suffix);
         for (SeafDirent dirent : list) {
             if (pattern.matcher(dirent.name).matches() && dirent.size == file.length()) {
                 // Log.d(DEBUG_TAG, "File " + file.getName() + " in bucket " + bucketName + " already exists on the server. Skipping.");

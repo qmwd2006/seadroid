@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.seafile.seadroid2.SeadroidApplication;
+import com.seafile.seadroid2.util.SystemSwitchUtils;
 
 import java.io.File;
 
@@ -103,6 +104,7 @@ public class CameraUploadDBHelper extends SQLiteOpenHelper {
         values.put(PHOTOCACHE_COLUMN_DATE_ADDED, modified);
 
         database.insert(PHOTOCACHE_TABLE_NAME, null, values);
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"markAsUploaded");
     }
 
     public void cleanPhotoCache() {
