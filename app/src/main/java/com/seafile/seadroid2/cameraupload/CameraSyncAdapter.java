@@ -152,7 +152,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
      */
     private boolean validateRepository(DataManager dataManager) throws SeafException {
         List<SeafRepo> repos = dataManager.getReposFromServer();
-
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"validateRepository=="+repos.size());
         for (SeafRepo repo : repos) {
             if (repo.getID().equals(targetRepoId) && repo.getName().equals(targetRepoName))
                 return true;
@@ -267,6 +267,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
             // we're logged out on this account. disable camera upload.
             ContentResolver.cancelSync(account, CameraUploadManager.AUTHORITY);
             ContentResolver.setIsSyncable(account, CameraUploadManager.AUTHORITY, 0);
+            SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"!seafileAccount.hasValidToken()");
             return;
         }
 
@@ -289,7 +290,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
                  */
                 Log.e(DEBUG_TAG, "Sync aborted because the target repository does not exist");
                 syncResult.databaseError = true;
-                SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"start validateRepository");
+                SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"!validateRepository(dataManager)");
                 showNotificationRepoError();
                 return;
             }
@@ -304,7 +305,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
                 // Log.d(DEBUG_TAG, "waiting for transfer service");
                 Thread.sleep(100);
                 timeout -= 100;
-                SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"start timeout");
+                SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"waiting for transfer service");
             }
 
             if (txService == null) {
@@ -546,7 +547,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
         SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"waitForUploads");
         WAITLOOP: while (!isCancelled()) {
             Thread.sleep(100); // wait
-
+            SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"Thread.sleep(100); ");
             for (int id: tasksInProgress) {
                 UploadTaskInfo info = txService.getUploadTaskInfo(id);
                 if (info.state == TaskState.INIT || info.state == TaskState.TRANSFERRING) {
@@ -578,6 +579,7 @@ public class CameraSyncAdapter extends AbstractThreadedSyncAdapter {
                 throw SeafException.unknownException;
             }
         }
+        SystemSwitchUtils.getInstance(SeadroidApplication.getAppContext()).wtriteSportData(SeadroidApplication.getAppContext(),"checkUploadResult=="+tasksInProgress.size());
     }
 
     /**
