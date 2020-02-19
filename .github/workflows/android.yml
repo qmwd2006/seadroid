@@ -29,8 +29,19 @@ jobs:
         ls -alh app/build/outputs/apk/
         ls -alh app/build/outputs/apk/release/
 
-    - name: upload artifact
-      uses: actions/upload-artifact@master
+#    - name: upload artifact
+#      uses: actions/upload-artifact@master
+#      with:
+#        name: seadroid apk
+#        path: app/build/outputs/apk
+
+    - name: Gzip
+      run: |
+        tar -czvf seadroid.tar.gz app/build/outputs/apk/
+
+    - name: Upload to release
+      uses: JasonEtco/upload-to-release@master
       with:
-        name: seadroid apk
-        path: app/build/outputs/apk
+        args: seadroid.tar.gz application/octet-stream
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
