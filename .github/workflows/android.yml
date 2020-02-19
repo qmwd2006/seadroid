@@ -28,7 +28,7 @@ jobs:
       run: tree app/build/outputs/apk/
 
     - name: upload artifact
-        uses: actions/upload-artifact@master
-        with:
-          name: seadroid apk
-          path: app/build/outputs/apk
+      uses: actions/upload-artifact@master
+      with:
+        name: seadroid apk
+        path: app/build/outputs/apk
