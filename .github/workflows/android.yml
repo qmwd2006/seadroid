@@ -35,10 +35,32 @@ jobs:
         name: seadroid apk
         path: app/build/outputs/apk
 
-    - name: Gzip
+    - name: gzip
       run: |
         tar -czvf seadroid.tar.gz app/build/outputs/apk/
         ls -alh seadroid.tar.gz
+
+    - name: scp files
+      uses: alinz/ssh-scp-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
+        user: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        # runs this on remove server
+        ssh_before: |
+          echo $GITHUB_WORKFLOW
+          echo $GITHUB_RUN_ID
+          echo $GITHUB_RUN_NUMBER
+          mkdir -p $GITHUB_REPOSITORY/
+
+        # then uploads files
+        scp: |
+          -P ${{ secrets.SSH_PORT }} seadroid.tar.gz ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/$GITHUB_REPOSITORY/
+
+        # then run these commands
+        ssh_after: |
+          echo ssh_after
 
 #    - name: Upload to release
 #      uses: JasonEtco/upload-to-release@master
