@@ -25,7 +25,9 @@ jobs:
       run: ./gradlew assembleRelease
 
     - name: list build files
-      run: ls -alh app/build/outputs/apk/
+      run: |
+        ls -alh app/build/outputs/apk/
+        ls -alh app/build/outputs/apk/release/
 
     - name: upload artifact
       uses: actions/upload-artifact@master
