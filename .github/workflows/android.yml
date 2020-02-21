@@ -29,11 +29,11 @@ jobs:
         ls -alh app/build/outputs/apk/
         ls -alh app/build/outputs/apk/release/
 
-    - name: upload artifact
-      uses: actions/upload-artifact@master
-      with:
-        name: seadroid apk
-        path: app/build/outputs/apk
+#    - name: upload artifact
+#      uses: actions/upload-artifact@master
+#      with:
+#        name: seadroid apk
+#        path: app/build/outputs/apk
 
     - name: gzip
       run: |
